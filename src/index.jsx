@@ -239,6 +239,19 @@ class LazyLoad extends Component {
     checkVisible(this);
   }
 
+  componentDidUpdate(prevProps) {
+    if(prevProps.overflow !== this.props.overflow && this.props.overflow === true){
+      const parent = scrollParent(ReactDom.findDOMNode(this));
+      if (parent && typeof parent.getAttribute === 'function') {
+        const listenerCount = 1 + (+parent.getAttribute(LISTEN_FLAG));
+        if (listenerCount === 1) {
+          parent.addEventListener('scroll', finalLazyLoadHandler, passiveEvent);
+        }
+        parent.setAttribute(LISTEN_FLAG, listenerCount);
+      }
+    }
+  }
+
   shouldComponentUpdate() {
     return this.visible;
   }
